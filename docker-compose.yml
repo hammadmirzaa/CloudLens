@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cloudlens-backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+    networks:
+      - cloudlens-network
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=http://localhost:8000/api
+    container_name: cloudlens-frontend
+    ports:
+      - "3000:8080"
+    depends_on:
+      - backend
+    networks:
+      - cloudlens-network
+    restart: always
+
+networks:
+  cloudlens-network:
+    driver: bridge
