@@ -10,3 +10,5 @@ pydantic
 pydantic-settings
 httpx
 python-dotenv
+google-cloud-container
+google-api-python-client
