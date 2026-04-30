@@ -157,4 +157,44 @@ class ComputeService:
             "timeseries": timeseries
         }
 
+    async def get_total_cpu_utilization(self) -> float:
+        """Calculate average CPU utilization across all instances in the project."""
+        loop = asyncio.get_running_loop()
+        return await loop.run_in_executor(None, self._get_total_cpu_utilization_sync)
+
+    def _get_total_cpu_utilization_sync(self) -> float:
+        if not self.project_id:
+            return 0.0
+            
+        now = time.time()
+        interval = monitoring_v3.TimeInterval(
+            {
+                "end_time": Timestamp(seconds=int(now)),
+                "start_time": Timestamp(seconds=int(now - 3600)),
+            }
+        )
+        
+        project_name = f"projects/{self.project_id}"
+        
+        # Aggregated query across all instances
+        results = self.monitoring_client.list_time_series(
+            request={
+                "name": project_name,
+                "filter": 'metric.type = "compute.googleapis.com/instance/cpu/utilization"',
+                "interval": interval,
+                "view": monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
+                "aggregation": {
+                    "alignment_period": {"seconds": 3600},
+                    "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_MEAN,
+                    "cross_series_reducer": monitoring_v3.Aggregation.Reducer.REDUCE_MEAN,
+                }
+            }
+        )
+        
+        for result in results:
+            for point in result.points:
+                return point.value.double_value * 100
+        
+        return 0.0
+
 compute_service = ComputeService()

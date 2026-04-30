@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.routers import compute, cloudrun, gke, cloudsql
+from app.routers import compute, cloudrun, gke, cloudsql, logs, billing, cicd, overview
 
 app = FastAPI(
     title="GCP Infrastructure Monitoring Dashboard API",
@@ -23,6 +23,10 @@ app.include_router(compute.router, prefix="/api/compute")
 app.include_router(cloudrun.router, prefix="/api/cloudrun")
 app.include_router(gke.router, prefix="/api/gke")
 app.include_router(cloudsql.router, prefix="/api/cloudsql")
+app.include_router(logs.router, prefix="/api/logs")
+app.include_router(billing.router, prefix="/api/billing")
+app.include_router(cicd.router, prefix="/api/cicd")
+app.include_router(overview.router, prefix="/api/overview")
 
 @app.get("/health")
 async def health_check():
