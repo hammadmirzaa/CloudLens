@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+google-cloud-monitoring
+google-cloud-logging
+google-cloud-compute
+google-cloud-run
+google-cloud-billing
+google-cloud-build
+pydantic
+pydantic-settings
+httpx
+python-dotenv
