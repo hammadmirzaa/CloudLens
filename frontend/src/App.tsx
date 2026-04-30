@@ -5,6 +5,8 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Compute from './pages/Compute';
 import CloudRun from './pages/CloudRun';
+import GKE from './pages/GKE';
+import CloudSQL from './pages/CloudSQL';
 import Logs from './pages/Logs';
 import Billing from './pages/Billing';
 import CICD from './pages/CICD';
@@ -19,13 +21,6 @@ const queryClient = new QueryClient({
   },
 });
 
-// Placeholder for other pages
-const PlaceholderPage = ({ title }: { title: string }) => (
-  <div className="flex items-center justify-center h-full min-h-[400px]">
-    <h2 className="text-2xl font-semibold text-slate-400">{title} Page Content</h2>
-  </div>
-);
-
 const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
@@ -35,8 +30,8 @@ const App: React.FC = () => {
             <Route index element={<Dashboard />} />
             <Route path="compute" element={<Compute />} />
             <Route path="cloud-run" element={<CloudRun />} />
-            <Route path="gke" element={<PlaceholderPage title="GKE" />} />
-            <Route path="cloud-sql" element={<PlaceholderPage title="Cloud SQL" />} />
+            <Route path="gke" element={<GKE />} />
+            <Route path="cloud-sql" element={<CloudSQL />} />
             <Route path="logs" element={<Logs />} />
             <Route path="billing" element={<Billing />} />
             <Route path="cicd" element={<CICD />} />
