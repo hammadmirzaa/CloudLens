@@ -93,8 +93,8 @@ const CloudRun: React.FC = () => {
               className="bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 p-6 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-500/50 transition-all cursor-pointer relative overflow-hidden group"
             >
               <div className={`absolute top-0 left-0 w-full h-1 ${
-                service.status === 'Healthy' ? 'bg-emerald-500' : 
-                service.status === 'Degraded' ? 'bg-amber-500' : 'bg-red-500'
+                service.status === 'HEALTHY' ? 'bg-emerald-500' : 
+                service.status === 'DEGRADED' ? 'bg-amber-500' : 'bg-red-500'
               }`}></div>
               
               <div className="flex justify-between items-start mb-4 mt-2">
@@ -105,7 +105,7 @@ const CloudRun: React.FC = () => {
               <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-6">
                 <span className="bg-gray-100 dark:bg-slate-800 px-2 py-0.5 rounded">{service.region}</span>
                 <span>•</span>
-                <span className="truncate" title={service.url}>{service.url.replace('https://', '')}</span>
+                <span className="truncate" title={service.consoleUrl}>{service.consoleUrl.replace('https://', '')}</span>
               </div>
               
               <div className="grid grid-cols-3 gap-4 mb-4">
@@ -115,7 +115,7 @@ const CloudRun: React.FC = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xs text-slate-500 dark:text-slate-400 mb-1">Latency</span>
-                  <span className={`font-medium ${service.latencyMs > 500 ? 'text-red-500' : service.latencyMs > 200 ? 'text-amber-500' : 'text-slate-900 dark:text-white'}`}>{service.latencyMs}ms</span>
+                  <span className={`font-medium ${service.avgLatency > 500 ? 'text-red-500' : service.avgLatency > 200 ? 'text-amber-500' : 'text-slate-900 dark:text-white'}`}>{service.avgLatency}ms</span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xs text-slate-500 dark:text-slate-400 mb-1">Error Rate</span>
@@ -124,8 +124,8 @@ const CloudRun: React.FC = () => {
               </div>
               
               <div className="pt-4 border-t border-gray-100 dark:border-slate-800/60 flex justify-between items-center text-xs text-slate-400 dark:text-slate-500">
-                <div className="flex items-center gap-1.5"><Clock size={12} /> {service.lastDeployed}</div>
-                <div className="flex items-center gap-1.5 hover:text-indigo-600 dark:hover:text-indigo-400" onClick={(e) => { e.stopPropagation(); window.open(service.url, '_blank'); }}>
+                <div className="flex items-center gap-1.5"><Clock size={12} /> {service.latestRevision}</div>
+                <div className="flex items-center gap-1.5 hover:text-indigo-600 dark:hover:text-indigo-400" onClick={(e) => { e.stopPropagation(); window.open(service.consoleUrl, '_blank'); }}>
                   Open <ExternalLink size={12} />
                 </div>
               </div>
@@ -143,8 +143,8 @@ const CloudRun: React.FC = () => {
 };
 
 const StatusBadge = ({ status }: { status: string }) => {
-  if (status === 'Healthy') return <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 text-xs font-medium bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-500/20"><CheckCircle2 size={12} /> Healthy</span>;
-  if (status === 'Degraded') return <span className="flex items-center gap-1 text-amber-700 dark:text-amber-400 text-xs font-medium bg-amber-50 dark:bg-amber-500/10 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-500/20"><AlertTriangle size={12} /> Degraded</span>;
+  if (status === 'HEALTHY') return <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 text-xs font-medium bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-500/20"><CheckCircle2 size={12} /> Healthy</span>;
+  if (status === 'DEGRADED') return <span className="flex items-center gap-1 text-amber-700 dark:text-amber-400 text-xs font-medium bg-amber-50 dark:bg-amber-500/10 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-500/20"><AlertTriangle size={12} /> Degraded</span>;
   return <span className="flex items-center gap-1 text-red-700 dark:text-red-400 text-xs font-medium bg-red-50 dark:bg-red-500/10 px-2 py-0.5 rounded border border-red-200 dark:border-red-500/20"><X size={12} /> Down</span>;
 };
 
@@ -213,7 +213,7 @@ const ServiceModal = ({ serviceName, onClose }: { serviceName: string, onClose: 
                           contentStyle={{ backgroundColor: theme === 'dark' ? '#0f172a' : '#fff', borderColor: theme === 'dark' ? '#334155' : '#e2e8f0', color: theme === 'dark' ? '#f8fafc' : '#0f172a', borderRadius: '0.5rem' }}
                         />
                         <Bar dataKey="count" radius={[0, 4, 4, 0]}>
-                          {data.metrics.latency.map((entry, index) => (
+                          {data.metrics.latency.map((_entry: any, index: number) => (
                             <Cell key={`cell-${index}`} fill={index > 2 ? '#ef4444' : index > 1 ? '#f59e0b' : '#10b981'} />
                           ))}
                         </Bar>
@@ -230,7 +230,7 @@ const ServiceModal = ({ serviceName, onClose }: { serviceName: string, onClose: 
                   <span className="text-slate-600 dark:text-slate-400 text-xs font-mono font-medium">Recent Logs</span>
                 </div>
                 <div className="p-4 h-[300px] overflow-y-auto font-mono text-sm space-y-1.5">
-                  {data.recentLogs.map((log) => (
+                  {data.recentLogs.map((log: any) => (
                     <div key={log.id} className="flex gap-3 hover:bg-white/5 dark:hover:bg-white/5 py-0.5 rounded px-1 transition-colors">
                       <span className="text-slate-500 shrink-0">{new Date(log.timestamp).toLocaleTimeString()}</span>
                       <span className={`shrink-0 w-16 ${log.severity === 'ERROR' ? 'text-red-400' : log.severity === 'WARNING' ? 'text-amber-400' : 'text-blue-400'}`}>[{log.severity}]</span>

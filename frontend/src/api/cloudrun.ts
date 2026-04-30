@@ -12,7 +12,7 @@ export const fetchCloudRunServices = async (): Promise<CloudRunService[]> => {
   ];
 };
 
-export const fetchCloudRunMetrics = async (name: string): Promise<CloudRunMetrics> => {
+export const fetchCloudRunMetrics = async (_name: string): Promise<CloudRunMetrics> => {
   await new Promise(resolve => setTimeout(resolve, 600));
 
   const generateLineData = () => {
@@ -35,7 +35,7 @@ export const fetchCloudRunMetrics = async (name: string): Promise<CloudRunMetric
   };
 };
 
-export const fetchCloudRunLogs = async (name: string): Promise<LogLine[]> => {
+export const fetchCloudRunLogs = async (_name: string): Promise<LogLine[]> => {
   await new Promise(resolve => setTimeout(resolve, 800));
 
   return Array.from({ length: 20 }, (_, i) => {

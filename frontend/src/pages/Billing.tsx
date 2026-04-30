@@ -108,7 +108,7 @@ const Billing: React.FC = () => {
                   <Tooltip 
                     cursor={{ fill: theme === 'dark' ? '#1e293b' : '#f1f5f9' }}
                     contentStyle={{ backgroundColor: theme === 'dark' ? '#0f172a' : '#fff', borderColor: theme === 'dark' ? '#334155' : '#e2e8f0', color: theme === 'dark' ? '#f8fafc' : '#0f172a', borderRadius: '0.5rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-                    formatter={(value: number) => [`$${value.toFixed(2)}`, 'Cost']}
+                    formatter={(value: any) => [`$${value.toFixed(2)}`, 'Cost']}
                   />
                   <Bar dataKey="cost" radius={[0, 4, 4, 0]} barSize={24}>
                     {services.map((entry, index) => (
@@ -145,7 +145,7 @@ const Billing: React.FC = () => {
                   <Tooltip 
                     contentStyle={{ backgroundColor: theme === 'dark' ? '#0f172a' : '#fff', borderColor: theme === 'dark' ? '#334155' : '#e2e8f0', color: theme === 'dark' ? '#f8fafc' : '#0f172a', borderRadius: '0.5rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
                     itemStyle={{ color: '#10b981' }}
-                    formatter={(value: number) => [`$${value.toFixed(2)}`, 'Spend']}
+                    formatter={(value: any) => [`$${value.toFixed(2)}`, 'Spend']}
                     cursor={{ stroke: theme === 'dark' ? '#334155' : '#e2e8f0', strokeDasharray: '4 4' }}
                   />
                   <Area type="monotone" dataKey="cost" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorCost)" activeDot={{ r: 4, fill: '#10b981', stroke: theme === 'dark' ? '#0f172a' : '#fff', strokeWidth: 2 }} />

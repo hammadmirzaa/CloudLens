@@ -148,10 +148,10 @@ const Dashboard: React.FC = () => {
                   <RechartsTooltip 
                     cursor={{ fill: theme === 'dark' ? '#1e293b' : '#f1f5f9' }}
                     contentStyle={tooltipStyle}
-                    formatter={(value: number) => [`$${value}`, 'Cost']}
+                    formatter={(value: any) => [`$${value}`, 'Cost']}
                   />
                   <Bar dataKey="cost" radius={[4, 4, 0, 0]} maxBarSize={50}>
-                    {costByService.map((entry, index) => (
+                    {costByService.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Bar>

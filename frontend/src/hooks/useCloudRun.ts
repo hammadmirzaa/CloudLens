@@ -24,3 +24,20 @@ export const useCloudRunLogs = (name: string | null) => {
     enabled: !!name,
   });
 };
+
+export const useCloudRunServiceDetails = (name: string) => {
+  const metrics = useCloudRunMetrics(name);
+  const logs = useCloudRunLogs(name);
+
+  const isLoading = metrics.isLoading || logs.isLoading;
+  const isError = metrics.isError || logs.isError;
+  const data = metrics.data && logs.data ? {
+    metrics: {
+      requests: metrics.data.requestRate,
+      latency: metrics.data.latencyHistogram
+    },
+    recentLogs: logs.data
+  } : undefined;
+
+  return { data, isLoading, isError };
+};

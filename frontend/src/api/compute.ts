@@ -13,7 +13,7 @@ export const fetchComputeInstances = async (): Promise<VmInstance[]> => {
   ];
 };
 
-export const fetchComputeMetrics = async (name: string): Promise<VmMetrics> => {
+export const fetchComputeMetrics = async (_name: string): Promise<VmMetrics> => {
   await new Promise(resolve => setTimeout(resolve, 600));
 
   const generateData = (base: number) => {

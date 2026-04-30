@@ -4,12 +4,12 @@ export const fetchLogs = async (
   resource: string, 
   severity: string, 
   limit: number, 
-  pageToken?: string
+  _pageToken?: string
 ): Promise<LogsResponse> => {
   await new Promise(resolve => setTimeout(resolve, 600));
 
   const generateLogs = (count: number) => {
-    return Array.from({ length: count }, (_, i) => {
+    return Array.from({ length: count }, (_, _i) => {
       const r = Math.random();
       const randSev = r > 0.95 ? 'CRITICAL' : r > 0.85 ? 'ERROR' : r > 0.7 ? 'WARNING' : r > 0.5 ? 'DEBUG' : 'INFO';
       const actualSev = severity === 'All' ? randSev : severity;

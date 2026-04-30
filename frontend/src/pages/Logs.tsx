@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useLogs } from '../hooks/useLogs';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { Search, Filter, Terminal, Play, Pause, RefreshCw, Copy, Check } from 'lucide-react';
+import { Search, Terminal, Play, Pause, RefreshCw, Copy, Check } from 'lucide-react';
 
 const Logs: React.FC = () => {
   usePageTitle('Logs Explorer - CloudLens');
