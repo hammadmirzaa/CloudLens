@@ -5,6 +5,9 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Compute from './pages/Compute';
 import CloudRun from './pages/CloudRun';
+import Logs from './pages/Logs';
+import Billing from './pages/Billing';
+import CICD from './pages/CICD';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -34,9 +37,9 @@ const App: React.FC = () => {
             <Route path="cloud-run" element={<CloudRun />} />
             <Route path="gke" element={<PlaceholderPage title="GKE" />} />
             <Route path="cloud-sql" element={<PlaceholderPage title="Cloud SQL" />} />
-            <Route path="logs" element={<PlaceholderPage title="Logs" />} />
-            <Route path="billing" element={<PlaceholderPage title="Billing" />} />
-            <Route path="cicd" element={<PlaceholderPage title="CI/CD" />} />
+            <Route path="logs" element={<Logs />} />
+            <Route path="billing" element={<Billing />} />
+            <Route path="cicd" element={<CICD />} />
           </Route>
         </Routes>
       </Router>
