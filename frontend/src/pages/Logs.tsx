@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { useLogs } from '../hooks/useLogs';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { Search, Filter, Terminal, Play, Pause, RefreshCw, Copy, Check } from 'lucide-react';
 
 const Logs: React.FC = () => {
+  usePageTitle('Logs Explorer - CloudLens');
   const [resource, setResource] = useState('All');
   const [severity, setSeverity] = useState('All');
   const [limit, setLimit] = useState(50);
@@ -34,11 +36,11 @@ const Logs: React.FC = () => {
     <div className="max-w-7xl mx-auto h-[calc(100vh-8rem)] flex flex-col space-y-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 shrink-0">
         <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-2">
-            <Terminal className="text-blue-400" />
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+            <Terminal className="text-blue-500 dark:text-blue-400" />
             Logs Explorer
           </h1>
-          <p className="text-slate-400 mt-1 text-sm">Real-time log ingestion and analysis.</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">Real-time log ingestion and analysis.</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -46,8 +48,8 @@ const Logs: React.FC = () => {
             onClick={() => setAutoRefresh(!autoRefresh)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
               autoRefresh 
-                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20' 
-                : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+                ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20 hover:bg-emerald-100 dark:hover:bg-emerald-500/20' 
+                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700'
             }`}
           >
             {autoRefresh ? <Pause size={16} /> : <Play size={16} />}
@@ -57,23 +59,23 @@ const Logs: React.FC = () => {
           <button 
             onClick={() => refetch()}
             disabled={isFetching}
-            className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition-colors disabled:opacity-50"
+            className="p-2 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg border border-gray-200 dark:border-slate-700 transition-colors disabled:opacity-50"
           >
-            <RefreshCw size={18} className={isFetching ? 'animate-spin text-blue-400' : ''} />
+            <RefreshCw size={18} className={isFetching ? 'animate-spin text-blue-500 dark:text-blue-400' : ''} />
           </button>
         </div>
       </div>
 
       {/* Filters Bar */}
-      <div className="bg-slate-900 rounded-xl border border-slate-800 p-4 shadow-sm flex flex-wrap gap-4 shrink-0">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 p-4 shadow-sm flex flex-wrap gap-4 shrink-0">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 w-4 h-4" />
           <input 
             type="text" 
             placeholder="Filter logs by text..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-700 text-slate-200 text-sm rounded-lg pl-9 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            className="w-full bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-700 text-slate-900 dark:text-slate-200 text-sm rounded-lg pl-9 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
           />
         </div>
         
@@ -82,7 +84,7 @@ const Logs: React.FC = () => {
             <select
               value={resource}
               onChange={(e) => setResource(e.target.value)}
-              className="bg-slate-950 border border-slate-700 text-slate-300 text-sm rounded-lg pl-3 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none"
+              className="bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg pl-3 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none"
             >
               <option value="All">All Resources</option>
               <option value="frontend-app">frontend-app</option>
@@ -95,7 +97,7 @@ const Logs: React.FC = () => {
             <select
               value={severity}
               onChange={(e) => setSeverity(e.target.value)}
-              className="bg-slate-950 border border-slate-700 text-slate-300 text-sm rounded-lg pl-3 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none"
+              className="bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg pl-3 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none"
             >
               <option value="All">All Severities</option>
               <option value="DEBUG">DEBUG</option>
@@ -110,7 +112,7 @@ const Logs: React.FC = () => {
             <select
               value={limit}
               onChange={(e) => setLimit(Number(e.target.value))}
-              className="bg-slate-950 border border-slate-700 text-slate-300 text-sm rounded-lg pl-3 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none"
+              className="bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg pl-3 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none"
             >
               <option value={50}>50 lines</option>
               <option value={100}>100 lines</option>
@@ -121,26 +123,26 @@ const Logs: React.FC = () => {
       </div>
 
       {/* Terminal View */}
-      <div className="flex-1 bg-[#0c0c0c] rounded-xl border border-slate-700 shadow-xl overflow-hidden flex flex-col font-mono text-sm relative group">
-        <div className="bg-slate-800/80 px-4 py-2 flex items-center gap-2 border-b border-slate-700 shrink-0">
+      <div className="flex-1 bg-[#1e1e1e] dark:bg-[#0c0c0c] rounded-xl border border-gray-300 dark:border-slate-700 shadow-xl overflow-hidden flex flex-col font-mono text-sm relative group">
+        <div className="bg-gray-200 dark:bg-slate-800/80 px-4 py-2 flex items-center gap-2 border-b border-gray-300 dark:border-slate-700 shrink-0">
           <div className="w-3 h-3 rounded-full bg-red-500"></div>
           <div className="w-3 h-3 rounded-full bg-amber-500"></div>
           <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-          <span className="ml-4 text-slate-400 text-xs font-sans tracking-wider">LOG VIEWER</span>
+          <span className="ml-4 text-slate-600 dark:text-slate-400 text-xs font-sans tracking-wider font-semibold">LOG VIEWER</span>
         </div>
         
-        <div className="flex-1 overflow-y-auto p-4 space-y-1">
+        <div className="flex-1 overflow-y-auto p-4 space-y-1 bg-[#1e1e1e] dark:bg-transparent">
           {isLoading && !isFetching ? (
-            <div className="text-slate-500 animate-pulse">Loading logs...</div>
+            <div className="text-slate-400 dark:text-slate-500 animate-pulse">Loading logs...</div>
           ) : isError ? (
             <div className="text-red-400">Failed to load logs. Please try again.</div>
           ) : filteredLogs.length === 0 ? (
-            <div className="text-slate-500 italic">No logs found matching criteria.</div>
+            <div className="text-slate-400 dark:text-slate-500 italic">No logs found matching criteria.</div>
           ) : (
             filteredLogs.map(log => (
-              <div key={log.id} className="flex group/line hover:bg-slate-800/50 py-1 px-2 rounded -mx-2 transition-colors relative pr-10">
+              <div key={log.id} className="flex group/line hover:bg-white/10 dark:hover:bg-slate-800/50 py-1 px-2 rounded -mx-2 transition-colors relative pr-10">
                 <div className="flex gap-3 w-full items-start">
-                  <span className="text-slate-500 shrink-0">{new Date(log.timestamp).toLocaleTimeString()}</span>
+                  <span className="text-slate-400 dark:text-slate-500 shrink-0">{new Date(log.timestamp).toLocaleTimeString()}</span>
                   
                   <span className={`shrink-0 w-20 font-bold ${
                     log.severity === 'CRITICAL' ? 'text-purple-400 bg-purple-400/10 px-1 rounded' :
@@ -151,7 +153,7 @@ const Logs: React.FC = () => {
                     [{log.severity}]
                   </span>
                   
-                  <span className="text-emerald-400/80 shrink-0 w-32 truncate" title={log.resource}>
+                  <span className="text-emerald-400 shrink-0 w-32 truncate" title={log.resource}>
                     {log.resource}
                   </span>
                   
@@ -164,7 +166,7 @@ const Logs: React.FC = () => {
                 
                 <button 
                   onClick={() => handleCopy(`[${new Date(log.timestamp).toISOString()}] [${log.severity}] [${log.resource}] ${log.message}`, log.id)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-slate-200 hover:bg-slate-700 rounded opacity-0 group-hover/line:opacity-100 transition-all"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-white bg-transparent hover:bg-white/20 dark:hover:bg-slate-700 rounded opacity-0 group-hover/line:opacity-100 transition-all"
                   title="Copy log"
                 >
                   {copiedId === log.id ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
@@ -176,7 +178,7 @@ const Logs: React.FC = () => {
           {data?.nextPageToken && !isLoading && (
             <div className="pt-4 pb-2 flex justify-center">
               <button 
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs border border-slate-700 transition-colors font-sans"
+                className="px-4 py-2 bg-white/10 hover:bg-white/20 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-300 rounded text-xs border border-white/20 dark:border-slate-700 transition-colors font-sans"
               >
                 Load More Logs
               </button>
@@ -197,7 +199,7 @@ const HighlightText = ({ text, highlight }: { text: string, highlight: string })
   return (
     <>
       {parts.map((part, i) => 
-        regex.test(part) ? <mark key={i} className="bg-yellow-500/30 text-yellow-200 rounded px-0.5">{part}</mark> : part
+        regex.test(part) ? <mark key={i} className="bg-yellow-500/50 text-yellow-100 rounded px-0.5">{part}</mark> : part
       )}
     </>
   );

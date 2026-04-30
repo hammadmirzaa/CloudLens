@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
-import { useCloudRunServices, useCloudRunMetrics, useCloudRunLogs } from '../hooks/useCloudRun';
+import { useCloudRunServices, useCloudRunServiceDetails } from '../hooks/useCloudRun';
+import { usePageTitle } from '../hooks/usePageTitle';
+import { useTheme } from '../contexts/ThemeContext';
 import { 
-  Search, Filter, CloudCog, ExternalLink, Activity, AlertTriangle, 
-  CheckCircle2, XCircle, Clock, X, Terminal, BarChart3 
+  Search, Filter, CloudCog, Activity, ExternalLink, X, AlertTriangle, CheckCircle2, Clock, Terminal
 } from 'lucide-react';
 import { 
-  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell 
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  BarChart, Bar, Cell
 } from 'recharts';
 
 const CloudRun: React.FC = () => {
+  usePageTitle('Cloud Run - CloudLens');
   const { data: services, isLoading, isError } = useCloudRunServices();
   const [search, setSearch] = useState('');
-  const [regionFilter, setRegionFilter] = useState<string>('All');
+  const [regionFilter, setRegionFilter] = useState('All');
   const [selectedService, setSelectedService] = useState<string | null>(null);
+
+  const uniqueRegions = Array.from(new Set(services?.map(s => s.region) || []));
 
   const filteredServices = services?.filter(service => {
     const matchesSearch = service.name.toLowerCase().includes(search.toLowerCase());
@@ -20,126 +25,116 @@ const CloudRun: React.FC = () => {
     return matchesSearch && matchesRegion;
   }) || [];
 
-  const uniqueRegions = ['All', ...Array.from(new Set(services?.map(s => s.region) || []))];
-
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Cloud Run</h1>
-          <p className="text-slate-400 mt-2 text-sm">Monitor serverless container applications.</p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+            <CloudCog className="text-indigo-500 dark:text-indigo-400" />
+            Cloud Run Services
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-2 text-sm">Monitor serverless container deployments and traffic.</p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-slate-900 rounded-xl border border-slate-800 p-4 shadow-sm flex flex-col sm:flex-row gap-4">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 p-4 shadow-sm flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 w-5 h-5" />
           <input 
             type="text" 
             placeholder="Search services..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-700 text-slate-200 rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+            className="w-full bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-700 text-slate-900 dark:text-slate-200 rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
           />
         </div>
         <div className="relative min-w-[200px]">
-          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
+          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 w-5 h-5" />
           <select
             value={regionFilter}
             onChange={(e) => setRegionFilter(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-700 text-slate-200 rounded-lg pl-10 pr-10 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none cursor-pointer"
+            className="w-full bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-700 text-slate-900 dark:text-slate-200 rounded-lg pl-10 pr-10 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 appearance-none cursor-pointer"
           >
-            {uniqueRegions.map(region => (
-              <option key={region} value={region}>{region === 'All' ? 'All Regions' : region}</option>
-            ))}
+            <option value="All">All Regions</option>
+            {uniqueRegions.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
           <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-            <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+            <svg className="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
           </div>
         </div>
       </div>
 
       {/* Grid Area */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <div key={i} className="h-64 bg-slate-900 rounded-xl border border-slate-800 animate-pulse"></div>
+            <div key={i} className="h-48 bg-gray-100 dark:bg-slate-800/50 rounded-xl animate-pulse"></div>
           ))}
         </div>
       ) : isError ? (
-        <div className="bg-slate-900 rounded-xl border border-slate-800 p-12 text-center flex flex-col items-center">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 p-12 text-center flex flex-col items-center shadow-sm">
           <AlertTriangle className="w-12 h-12 text-red-500 mb-4" />
-          <h3 className="text-lg font-medium text-white mb-1">Error Loading Services</h3>
-          <p className="text-slate-400">Could not fetch Cloud Run data.</p>
+          <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-1">Error Loading Services</h3>
+          <p className="text-slate-500 dark:text-slate-400">Could not fetch Cloud Run data.</p>
         </div>
       ) : filteredServices.length === 0 ? (
-        <div className="bg-slate-900 rounded-xl border border-slate-800 p-16 text-center flex flex-col items-center">
-          <CloudCog className="w-16 h-16 text-slate-700 mb-4" />
-          <h3 className="text-lg font-medium text-white mb-1">No services found</h3>
-          <p className="text-slate-400">Adjust your search or filter criteria.</p>
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 p-16 text-center flex flex-col items-center shadow-sm">
+          <CloudCog className="w-16 h-16 text-slate-300 dark:text-slate-700 mb-4" />
+          <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-1">No services found</h3>
+          <p className="text-slate-500 dark:text-slate-400">Adjust your search or filter criteria.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredServices.map(service => (
             <div 
               key={service.name} 
               onClick={() => setSelectedService(service.name)}
-              className="bg-slate-900 rounded-xl border border-slate-800 hover:border-blue-500/50 p-6 shadow-sm transition-all cursor-pointer group hover:shadow-blue-500/5 relative overflow-hidden"
+              className="bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 p-6 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-500/50 transition-all cursor-pointer relative overflow-hidden group"
             >
-              {service.status === 'DOWN' && <div className="absolute top-0 right-0 w-full h-1 bg-red-500"></div>}
-              {service.status === 'DEGRADED' && <div className="absolute top-0 right-0 w-full h-1 bg-amber-500"></div>}
+              <div className={`absolute top-0 left-0 w-full h-1 ${
+                service.status === 'Healthy' ? 'bg-emerald-500' : 
+                service.status === 'Degraded' ? 'bg-amber-500' : 'bg-red-500'
+              }`}></div>
               
-              <div className="flex justify-between items-start mb-5">
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${service.status === 'DOWN' ? 'bg-red-500/10 text-red-400' : service.status === 'DEGRADED' ? 'bg-amber-500/10 text-amber-400' : 'bg-blue-500/10 text-blue-400'}`}>
-                    <CloudCog size={24} />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-white text-lg group-hover:text-blue-400 transition-colors">{service.name}</h3>
-                    <p className="text-slate-400 text-xs">{service.region}</p>
-                  </div>
-                </div>
+              <div className="flex justify-between items-start mb-4 mt-2">
+                <h3 className="font-semibold text-slate-900 dark:text-white text-lg truncate pr-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{service.name}</h3>
                 <StatusBadge status={service.status} />
               </div>
-
-              <div className="grid grid-cols-3 gap-4 mb-5 p-4 bg-slate-950/50 rounded-lg border border-slate-800/50">
+              
+              <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-6">
+                <span className="bg-gray-100 dark:bg-slate-800 px-2 py-0.5 rounded">{service.region}</span>
+                <span>•</span>
+                <span className="truncate" title={service.url}>{service.url.replace('https://', '')}</span>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-4 mb-4">
                 <div className="flex flex-col">
-                  <span className="text-slate-500 text-xs mb-1">Req/hr</span>
-                  <span className="text-slate-200 font-medium">{service.requestCount.toLocaleString()}</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 mb-1">Requests/sec</span>
+                  <span className="text-slate-900 dark:text-white font-medium">{service.requestCount.toLocaleString()}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-slate-500 text-xs mb-1">Latency</span>
-                  <span className="text-slate-200 font-medium">{service.avgLatency}ms</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 mb-1">Latency</span>
+                  <span className={`font-medium ${service.latencyMs > 500 ? 'text-red-500' : service.latencyMs > 200 ? 'text-amber-500' : 'text-slate-900 dark:text-white'}`}>{service.latencyMs}ms</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-slate-500 text-xs mb-1">Errors</span>
-                  <span className={`font-medium ${service.errorRate > 5 ? 'text-red-400' : service.errorRate > 1 ? 'text-amber-400' : 'text-emerald-400'}`}>
-                    {service.errorRate}%
-                  </span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 mb-1">Error Rate</span>
+                  <span className={`font-medium ${service.errorRate > 5 ? 'text-red-500' : service.errorRate > 1 ? 'text-amber-500' : 'text-slate-900 dark:text-white'}`}>{service.errorRate}%</span>
                 </div>
               </div>
-
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-slate-500 truncate pr-4" title={service.latestRevision}>
-                  Rev: <span className="text-slate-300">{service.latestRevision}</span>
-                </span>
-                <a 
-                  href={service.consoleUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors"
-                >
-                  Console <ExternalLink size={12} />
-                </a>
+              
+              <div className="pt-4 border-t border-gray-100 dark:border-slate-800/60 flex justify-between items-center text-xs text-slate-400 dark:text-slate-500">
+                <div className="flex items-center gap-1.5"><Clock size={12} /> {service.lastDeployed}</div>
+                <div className="flex items-center gap-1.5 hover:text-indigo-600 dark:hover:text-indigo-400" onClick={(e) => { e.stopPropagation(); window.open(service.url, '_blank'); }}>
+                  Open <ExternalLink size={12} />
+                </div>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Modal */}
+      {/* Details Modal */}
       {selectedService && (
         <ServiceModal serviceName={selectedService} onClose={() => setSelectedService(null)} />
       )}
@@ -148,132 +143,104 @@ const CloudRun: React.FC = () => {
 };
 
 const StatusBadge = ({ status }: { status: string }) => {
-  if (status === 'HEALTHY') {
-    return <span className="flex items-center gap-1 text-emerald-400 text-xs font-medium bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20"><CheckCircle2 size={12} /> Healthy</span>;
-  }
-  if (status === 'DOWN') {
-    return <span className="flex items-center gap-1 text-red-400 text-xs font-medium bg-red-500/10 px-2 py-1 rounded border border-red-500/20"><XCircle size={12} /> Down</span>;
-  }
-  return <span className="flex items-center gap-1 text-amber-400 text-xs font-medium bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20"><AlertTriangle size={12} /> Degraded</span>;
+  if (status === 'Healthy') return <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 text-xs font-medium bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-500/20"><CheckCircle2 size={12} /> Healthy</span>;
+  if (status === 'Degraded') return <span className="flex items-center gap-1 text-amber-700 dark:text-amber-400 text-xs font-medium bg-amber-50 dark:bg-amber-500/10 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-500/20"><AlertTriangle size={12} /> Degraded</span>;
+  return <span className="flex items-center gap-1 text-red-700 dark:text-red-400 text-xs font-medium bg-red-50 dark:bg-red-500/10 px-2 py-0.5 rounded border border-red-200 dark:border-red-500/20"><X size={12} /> Down</span>;
 };
 
 const ServiceModal = ({ serviceName, onClose }: { serviceName: string, onClose: () => void }) => {
-  const { data: metrics, isLoading: loadingMetrics } = useCloudRunMetrics(serviceName);
-  const { data: logs, isLoading: loadingLogs } = useCloudRunLogs(serviceName);
+  const { data, isLoading } = useCloudRunServiceDetails(serviceName);
+  const { theme } = useTheme();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="bg-slate-900 border border-slate-700 rounded-xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col relative z-10 shadow-2xl animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+      <div className="absolute inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
+      <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col relative z-10 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-800 bg-slate-950">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-500/10 rounded-lg text-blue-400">
-              <CloudCog size={20} />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-white">{serviceName}</h2>
-              <p className="text-xs text-slate-400">Service Metrics & Logs</p>
-            </div>
-          </div>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-800 rounded-lg transition-colors">
-            <X size={20} />
+        <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-slate-800">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <CloudCog className="text-indigo-500 dark:text-indigo-400" />
+            {serviceName} Details
+          </h2>
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+            <X size={24} />
           </button>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
-            {/* Request Rate Chart */}
-            <div className="bg-slate-950/50 rounded-xl border border-slate-800 p-5">
-              <h3 className="text-sm font-semibold text-slate-300 mb-4 flex items-center gap-2">
-                <Activity size={16} className="text-blue-400" />
-                Request Rate (Last 24h)
-              </h3>
-              <div className="h-[200px]">
-                {loadingMetrics ? (
-                  <div className="w-full h-full bg-slate-800/30 animate-pulse rounded-lg"></div>
-                ) : metrics ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={metrics.requestRate}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                      <XAxis dataKey="time" stroke="#64748b" tick={{ fill: '#64748b', fontSize: 10 }} tickMargin={8} axisLine={false} tickLine={false} minTickGap={30} />
-                      <YAxis stroke="#64748b" tick={{ fill: '#64748b', fontSize: 10 }} tickMargin={8} axisLine={false} tickLine={false} />
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', color: '#f8fafc', borderRadius: '0.5rem', fontSize: '12px' }}
-                        cursor={{ stroke: '#334155', strokeDasharray: '4 4' }}
-                      />
-                      <Line type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: '#3b82f6' }} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                ) : null}
-              </div>
+        <div className="flex-1 overflow-y-auto p-6">
+          {isLoading ? (
+            <div className="space-y-6 animate-pulse">
+              <div className="grid grid-cols-2 gap-6"><div className="h-64 bg-gray-100 dark:bg-slate-800/50 rounded-xl"></div><div className="h-64 bg-gray-100 dark:bg-slate-800/50 rounded-xl"></div></div>
+              <div className="h-64 bg-gray-100 dark:bg-slate-800/50 rounded-xl"></div>
             </div>
-
-            {/* Latency Histogram */}
-            <div className="bg-slate-950/50 rounded-xl border border-slate-800 p-5">
-              <h3 className="text-sm font-semibold text-slate-300 mb-4 flex items-center gap-2">
-                <BarChart3 size={16} className="text-purple-400" />
-                Latency Distribution
-              </h3>
-              <div className="h-[200px]">
-                {loadingMetrics ? (
-                  <div className="w-full h-full bg-slate-800/30 animate-pulse rounded-lg"></div>
-                ) : metrics ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={metrics.latencyHistogram} layout="vertical" margin={{ left: 20 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#334155" horizontal={false} />
-                      <XAxis type="number" stroke="#64748b" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
-                      <YAxis dataKey="bucket" type="category" stroke="#64748b" tick={{ fill: '#cbd5e1', fontSize: 11 }} axisLine={false} tickLine={false} />
-                      <Tooltip 
-                        cursor={{ fill: '#1e293b' }}
-                        contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', color: '#f8fafc', borderRadius: '0.5rem', fontSize: '12px' }}
-                      />
-                      <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={20}>
-                        {metrics.latencyHistogram.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill="#8b5cf6" />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                ) : null}
-              </div>
-            </div>
-          </div>
-
-          {/* Logs Section */}
-          <div className="bg-[#0c0c0c] rounded-xl border border-slate-800 overflow-hidden flex flex-col">
-            <div className="bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between">
-              <h3 className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                <Terminal size={14} className="text-slate-400" />
-                Recent Logs
-              </h3>
-              <span className="text-xs text-slate-500 bg-slate-950 px-2 py-1 rounded">Last 20 entries</span>
-            </div>
-            <div className="p-4 font-mono text-xs overflow-x-auto h-[250px] overflow-y-auto space-y-1.5">
-              {loadingLogs ? (
-                <div className="space-y-2 animate-pulse">
-                  {[1,2,3,4,5].map(i => <div key={i} className="h-4 bg-slate-800/50 rounded w-full"></div>)}
-                </div>
-              ) : logs ? (
-                logs.map(log => (
-                  <div key={log.id} className="flex gap-4 hover:bg-slate-800/30 px-2 py-1 rounded group">
-                    <span className="text-slate-500 whitespace-nowrap">{new Date(log.timestamp).toLocaleTimeString()}</span>
-                    <span className={`whitespace-nowrap font-bold ${
-                      log.severity === 'ERROR' ? 'text-red-400' : log.severity === 'WARNING' ? 'text-amber-400' : 'text-blue-400'
-                    }`}>
-                      [{log.severity}]
-                    </span>
-                    <span className="text-slate-300 flex-1">{log.message}</span>
+          ) : data ? (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Requests Chart */}
+                <div className="bg-gray-50 dark:bg-slate-950/50 rounded-xl border border-gray-200 dark:border-slate-800 p-5">
+                  <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase mb-4 flex items-center gap-2">
+                    <Activity size={16} /> Request Rate (24h)
+                  </h3>
+                  <div className="h-[200px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={data.metrics.requests}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#334155' : '#e2e8f0'} vertical={false} />
+                        <XAxis dataKey="time" stroke={theme === 'dark' ? '#64748b' : '#94a3b8'} tick={{ fontSize: 11 }} tickMargin={10} axisLine={false} tickLine={false} />
+                        <YAxis stroke={theme === 'dark' ? '#64748b' : '#94a3b8'} tick={{ fontSize: 11 }} tickMargin={10} axisLine={false} tickLine={false} />
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: theme === 'dark' ? '#0f172a' : '#fff', borderColor: theme === 'dark' ? '#334155' : '#e2e8f0', color: theme === 'dark' ? '#f8fafc' : '#0f172a', borderRadius: '0.5rem' }}
+                          cursor={{ stroke: theme === 'dark' ? '#334155' : '#e2e8f0', strokeDasharray: '4 4' }}
+                        />
+                        <Line type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+                      </LineChart>
+                    </ResponsiveContainer>
                   </div>
-                ))
-              ) : (
-                <div className="text-slate-500">No logs available.</div>
-              )}
+                </div>
+
+                {/* Latency Chart */}
+                <div className="bg-gray-50 dark:bg-slate-950/50 rounded-xl border border-gray-200 dark:border-slate-800 p-5">
+                  <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase mb-4 flex items-center gap-2">
+                    <Clock size={16} /> Latency Distribution
+                  </h3>
+                  <div className="h-[200px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={data.metrics.latency} layout="vertical" margin={{ left: 20 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#334155' : '#e2e8f0'} horizontal={false} />
+                        <XAxis type="number" stroke={theme === 'dark' ? '#64748b' : '#94a3b8'} tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+                        <YAxis type="category" dataKey="bucket" stroke={theme === 'dark' ? '#64748b' : '#94a3b8'} tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+                        <Tooltip 
+                          cursor={{ fill: theme === 'dark' ? '#1e293b' : '#f1f5f9' }}
+                          contentStyle={{ backgroundColor: theme === 'dark' ? '#0f172a' : '#fff', borderColor: theme === 'dark' ? '#334155' : '#e2e8f0', color: theme === 'dark' ? '#f8fafc' : '#0f172a', borderRadius: '0.5rem' }}
+                        />
+                        <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                          {data.metrics.latency.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={index > 2 ? '#ef4444' : index > 1 ? '#f59e0b' : '#10b981'} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+
+              {/* Logs */}
+              <div className="bg-[#0c0c0c] rounded-xl border border-gray-300 dark:border-slate-700 overflow-hidden shadow-lg">
+                <div className="bg-gray-200 dark:bg-slate-800 px-4 py-2 flex items-center gap-2 border-b border-gray-300 dark:border-slate-700">
+                  <Terminal size={14} className="text-slate-500 dark:text-slate-400" />
+                  <span className="text-slate-600 dark:text-slate-400 text-xs font-mono font-medium">Recent Logs</span>
+                </div>
+                <div className="p-4 h-[300px] overflow-y-auto font-mono text-sm space-y-1.5">
+                  {data.recentLogs.map((log) => (
+                    <div key={log.id} className="flex gap-3 hover:bg-white/5 dark:hover:bg-white/5 py-0.5 rounded px-1 transition-colors">
+                      <span className="text-slate-500 shrink-0">{new Date(log.timestamp).toLocaleTimeString()}</span>
+                      <span className={`shrink-0 w-16 ${log.severity === 'ERROR' ? 'text-red-400' : log.severity === 'WARNING' ? 'text-amber-400' : 'text-blue-400'}`}>[{log.severity}]</span>
+                      <span className="text-slate-300 break-words">{log.message}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
     </div>
